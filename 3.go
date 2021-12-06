@@ -5,6 +5,7 @@ import (
 	"math"
 )
 
+// FullKube calculate total matches from cube
 func FullKube(exp int) int {
 	var (
 		result     int
@@ -16,17 +17,12 @@ func FullKube(exp int) int {
 	return result
 }
 
+// FullPlane calculate total matches from square
 func FullPlane(length int) int {
-	var result int
-
-	if length == 1 {
-		result = 8
-	} else {
-		result = (length - 1) * (2*5 + (length-1)*3)
-	}
-	return result
+	return (length-1)*(2*5+(length-1)*3) + 8
 }
 
+// UpLow3 calculate side len of bigger and smaller cube and its volume
 func UpLow3(exp int, kind string) (int, int) {
 	var f func(float64) float64
 	switch kind {
@@ -41,7 +37,8 @@ func UpLow3(exp int, kind string) (int, int) {
 	return int(f(math.Cbrt(float64(exp)))), int(math.Pow(f(math.Cbrt(float64(exp))), 3))
 }
 
-func UpLow2(exp int, kind string) (int, int) {
+// UpLow2 calculate side len of bigger and smaller square and its area
+func UpLow2(length int, kind string) (int, int) {
 	var f func(float64) float64
 	switch kind {
 	case "upper":
@@ -52,21 +49,27 @@ func UpLow2(exp int, kind string) (int, int) {
 		f = math.Floor
 	}
 	//side length							plane area with side length eq len
-	return int(f(math.Sqrt(float64(exp)))), int(math.Pow(f(math.Sqrt(float64(exp))), 2))
+	return int(f(math.Sqrt(float64(length)))), int(math.Pow(f(math.Sqrt(float64(length))), 2))
 }
 
-func LilPlane(exp int) int {
+// LilPlane func takes total lilCubes on area and len of face of a Big Cube
+func LilPlane(exp int, upLen int) int {
 	var (
-		_, lilArea       = UpLow2(exp, "lower")
-		length, _    int = UpLow3(exp, "lower")
-		upLen, _         = UpLow2(exp, "upper")
-		_, area          = UpLow2(exp, "upper")
-		_, totalArea     = UpLow2(length, "upper")
-		result       int
+		lilLen, lilArea = UpLow2(exp, "lower")
+		length, area    = UpLow2(exp, "upper")
+		totalArea       = int(math.Pow(float64(upLen), 2))
+		diff            = area - (area - exp + lilArea)
+		result          int
 	)
 
 	if totalArea == area {
-		result = FullPlane(upLen)
+		result = FullPlane(length)
+	} else if lilLen == length {
+		result = FullPlane(lilLen)
+	} else if length-1 >= diff {
+		result = FullPlane(lilLen) + 5 + 3*(diff-1)
+	} else {
+		result = FullPlane(lilLen) + 10 + 3*(diff-2)
 	}
 
 	return result
@@ -74,10 +77,11 @@ func LilPlane(exp int) int {
 
 func main() {
 	var (
-		n int
+		n  int
+		n2 int
 	)
 
-	_, _ = fmt.Scan(&n)
+	_, _ = fmt.Scanln(&n, &n2)
 
-	fmt.Println(FullKube(n))
+	fmt.Println(LilPlane(n, n2))
 }
