@@ -114,14 +114,14 @@ func DecToRoma(exp int) string {
 		}
 
 		// Generating 1, 10, 100, 1000 numbers from current one
-		countT := revert / NumT
+		countT := int(math.Pow(10, float64(counter)))
 
 		//check
 		/*
-		   1448
-		   1000 / 1 == 1000; 1000*1
-		   400 / 4 == 100;
-		   40 / 4 == 10;
+			1448
+			1000 / 1 == 1000; 1000*1
+			400 / 4 == 100;
+			40 / 4 == 10;
 		*/
 
 		result = result + DecToRomaMap[NumT*countT]
