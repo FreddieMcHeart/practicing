@@ -61,8 +61,15 @@ func LilPlane(exp int, upLen int) int {
 		diff            = area - (area - exp + lilArea)
 		result          int
 	)
+	//
+	//fmt.Println("lilLen ", lilLen)
+	//fmt.Println("lilArea ", lilArea)
+	//fmt.Println("length ", length)
+	//fmt.Println("area ", area)
+	//fmt.Println("totalArea ", totalArea)
+	//fmt.Println("diff ", diff)
 
-	if totalArea == area {
+	if totalArea == exp {
 		result = FullPlane(length)
 	} else if lilLen == length {
 		result = FullPlane(lilLen)
@@ -75,13 +82,61 @@ func LilPlane(exp int, upLen int) int {
 	return result
 }
 
-func main() {
+func CubeEdge(exp, length int) int {
+	switch {
+	case exp <= length:
+		return 5 + (exp-1)*3
+	case exp <= 2*length:
+		return 10 + (exp-2)*3
+	case exp <= 3*length:
+		return 15 + (exp-3)*3
+	}
+	return 0
+}
+
+func Merging(exp int) int {
 	var (
-		n  int
-		n2 int
+		matches              int
+		lowLength, lowAmount = UpLow3(exp, "lower")
+		diff                 = exp - lowAmount
+		lilArea              = lowLength * lowLength
+		lilDiff              = int(math.Floor(float64(diff) / float64(lilArea)))
 	)
 
-	_, _ = fmt.Scanln(&n, &n2)
+	//fmt.Println("lowAmount ", lowAmount)
+	//fmt.Println("diff ", diff)
+	//fmt.Println("lilArea ", lilArea)
+	//fmt.Println("bigDiff", int(math.Ceil(float64(diff)/float64(lilArea))))
+	//fmt.Println("lilDiff ", lilDiff)
+	fmt.Println("cubes on one side", diff-lilDiff*lilArea)
 
-	fmt.Println(LilPlane(n, n2))
+	switch {
+	case diff == 0:
+		matches = FullKube(exp)
+	case diff-lilDiff*lilArea == 0 && lilDiff <= 3:
+		//fmt.Println("Full palne")
+		// add int FullKube(lowAmount) +
+		matches = FullKube(lowAmount) + FullPlane(lowLength)*lilDiff
+	case diff-lilDiff*lilArea > 0 && math.Ceil(float64(diff)/float64(lilArea)) <= 3:
+		fmt.Println("Plane")
+		//fmt.Println(FullPlane(lowLength) * lilDiff)
+		//fmt.Println(LilPlane(diff-lilDiff*lilArea, lowLength))
+		matches = FullKube(lowAmount) + FullPlane(lowLength)*lilDiff + LilPlane(diff-lilDiff*lilArea, lowLength)
+	case diff > 3*lilArea:
+		fmt.Println("Edge")
+		matches = FullKube(lowAmount) + FullPlane(lowLength)*3 + CubeEdge(diff-3*lilArea, lowLength)
+	}
+
+	return matches
+}
+
+func main() {
+	var (
+		n = 20
+	)
+
+	//_, _ = fmt.Scanln(&n)
+	for i := 17; i <= n; i++ {
+		fmt.Println(Merging(i), i)
+	}
 }
