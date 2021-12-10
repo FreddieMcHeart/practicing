@@ -48,7 +48,7 @@ func UpLow2(length int, kind string) (int, int) {
 	default:
 		f = math.Floor
 	}
-	//side length							plane area with side length eq len
+	//side length							   plane area with side length eq len
 	return int(f(math.Sqrt(float64(length)))), int(math.Pow(f(math.Sqrt(float64(length))), 2))
 }
 
@@ -61,13 +61,6 @@ func LilPlane(exp int, upLen int) int {
 		diff            = area - (area - exp + lilArea)
 		result          int
 	)
-	//
-	//fmt.Println("lilLen ", lilLen)
-	//fmt.Println("lilArea ", lilArea)
-	//fmt.Println("length ", length)
-	//fmt.Println("area ", area)
-	//fmt.Println("totalArea ", totalArea)
-	//fmt.Println("diff ", diff)
 
 	if totalArea == exp {
 		result = FullPlane(length)
@@ -82,18 +75,13 @@ func LilPlane(exp int, upLen int) int {
 	return result
 }
 
+// CubeEdge returns matches on Cube edges
 func CubeEdge(exp, length int) int {
-	switch {
-	case exp <= length:
-		return 5 + (exp-1)*3
-	case exp <= 2*length:
-		return 10 + (exp-2)*3
-	case exp <= 3*length:
-		return 15 + (exp-3)*3
-	}
-	return 0
+	var numEdge = int(math.Ceil(float64(exp) / float64(length)))
+	return 5*numEdge + (exp-numEdge)*3
 }
 
+// Merging main func that calculates total matches
 func Merging(exp int) int {
 	var (
 		matches              int
@@ -101,29 +89,27 @@ func Merging(exp int) int {
 		diff                 = exp - lowAmount
 		lilArea              = lowLength * lowLength
 		lilDiff              = int(math.Floor(float64(diff) / float64(lilArea)))
+		freeCube             int
 	)
 
-	//fmt.Println("lowAmount ", lowAmount)
-	//fmt.Println("diff ", diff)
-	//fmt.Println("lilArea ", lilArea)
-	//fmt.Println("bigDiff", int(math.Ceil(float64(diff)/float64(lilArea))))
-	//fmt.Println("lilDiff ", lilDiff)
-	fmt.Println("cubes on one side", diff-lilDiff*lilArea)
+	if exp == 4 {
+		lilDiff = 2
+	}
+
+	freeCube = diff - lilDiff*lilArea
 
 	switch {
 	case diff == 0:
 		matches = FullKube(exp)
-	case diff-lilDiff*lilArea == 0 && lilDiff <= 3:
-		//fmt.Println("Full palne")
-		// add int FullKube(lowAmount) +
+	case lilDiff < 2 && freeCube == 0:
 		matches = FullKube(lowAmount) + FullPlane(lowLength)*lilDiff
-	case diff-lilDiff*lilArea > 0 && math.Ceil(float64(diff)/float64(lilArea)) <= 3:
-		fmt.Println("Plane")
-		//fmt.Println(FullPlane(lowLength) * lilDiff)
-		//fmt.Println(LilPlane(diff-lilDiff*lilArea, lowLength))
-		matches = FullKube(lowAmount) + FullPlane(lowLength)*lilDiff + LilPlane(diff-lilDiff*lilArea, lowLength)
-	case diff > 3*lilArea:
-		fmt.Println("Edge")
+	case lilDiff == 2 && freeCube <= lowLength:
+		matches = FullKube(lowAmount) + FullPlane(lowLength)*lilDiff + CubeEdge(freeCube, lowLength)
+	case lilDiff <= 1:
+		matches = FullKube(lowAmount) + FullPlane(lowLength)*lilDiff + LilPlane(freeCube, lowLength)
+	case diff-lowLength-2*lilArea <= lilArea:
+		matches = FullKube(lowAmount) + FullPlane(lowLength)*2 + CubeEdge(lowLength, lowLength) + LilPlane(diff-lowLength-2*lilArea, lowLength)
+	case diff-lowLength-3*lilArea <= 2*lowLength:
 		matches = FullKube(lowAmount) + FullPlane(lowLength)*3 + CubeEdge(diff-3*lilArea, lowLength)
 	}
 
@@ -132,11 +118,9 @@ func Merging(exp int) int {
 
 func main() {
 	var (
-		n = 20
+		n int
 	)
 
-	//_, _ = fmt.Scanln(&n)
-	for i := 17; i <= n; i++ {
-		fmt.Println(Merging(i), i)
-	}
+	_, _ = fmt.Scanln(&n)
+	fmt.Println(Merging(n))
 }
