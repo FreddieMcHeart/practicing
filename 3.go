@@ -92,6 +92,7 @@ func Merging(exp int) int {
 		freeCube             int
 	)
 
+	// Processing 1x1 lilArea
 	if exp == 4 {
 		lilDiff = 2
 	}
