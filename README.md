@@ -8,3 +8,4 @@
 * [Tortoise racing](https://www.codewars.com/kata/55e2adece53b4cdcb900006c)
 * [DNA to RNA Conversion](https://www.codewars.com/kata/5556282156230d0e5e000089)
 * [Valid Parentheses](https://www.codewars.com/kata/52774a314c2333f0a7000688)
+* [Number of trailing zeros of N!](https://www.codewars.com/kata/52f787eb172a8b4ae1000a34)
